@@ -1,0 +1,69 @@
+#include <bits/stdc++.h>
+#define ll long long int
+#define loop(i, n, m) for (int i = n; i < m; i++)
+#define vec vector<int>
+#define vecvec vector<vector<int>>
+#define nl cout << '\n'
+#define sortall(a) sort(a.begin(), a.end())
+using namespace std;
+int rmq(vector <int>&a,vector<int>&seg,int l,int r,int ss,int se,int i)
+{
+    if(l<=ss && se<=r) return seg[i];
+    else if(r<ss || se<l) return -1;
+    int m=(ss+se)/2;
+    int m1=rmq(a,seg,l,r,ss,m,2*i+1);
+    int m2=rmq(a,seg,l,r,m+1,se,2*i+2);
+    if(m1 ==-1) return m2;
+    if(m2==-1) return m1;
+    if(a[m1]<=a[m2]) return m1;
+    else return m2;
+}
+void updatemin(vector<int>&a ,vector<int>&seg,int id,int x)
+{
+    int n=(seg.size()+1)/2;
+    a[id]=x;
+    id+=n-1;
+    id=(id-1)/2;
+    while(id>=0)
+    {
+        if(a[seg[2*id+1]]<a[seg[2*id+2]]) seg[id]=seg[2*id+1];
+        else seg[id]=seg[2*id+2];
+        if(id>0)
+        {id=(id-1)/2;}
+        else {break;}
+    }
+}
+vector<int> buildmin(vector <int>&a)
+{
+    int leaves;int n=a.size();
+    double temp = log2(a.size());
+    if(temp==(int)temp) leaves=1<<(int)temp;
+    else leaves=1<<(int)(temp+1);
+    vector<int> seg(2*leaves-1,INT_MAX);
+    for(int i=0;i<a.size();i++)
+    {
+        seg[i+leaves-1]=i;
+    }
+    for(int i=leaves-2;i>=0;i--)
+    {
+        if(a[seg[2*i+1]]<a[seg[2*i+2]]) seg[i]=seg[2*i+1];
+        else seg[i]=seg[2*i+2];
+    }
+    return seg;
+}
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int n;cin>>n;int ind;cin>>ind;
+    vec a(n);
+    loop(i,0,n) { cin>>a[i];}
+    vec seg=buildmin(a);
+    // loop(i,0,seg.size()){cout<<seg[i]<<" ";}
+    nl;
+    updatemin(a,seg,3,-8);
+    // loop(i,0,a.size()){cout<<a[i]<<" ";};nl;
+    // loop(i,0,seg.size()){cout<<seg[i]<<" ";}nl;
+    cout<<" "<<rmq(a,seg,1,3,0,n-1,0);nl;
+    return 0;
+}
