@@ -1,0 +1,7 @@
+int rsq(vector <int>&a,vector<int>&seg,int l,int r,int ss,int se,int i)
+{
+    if(l<=ss && se<=r) return seg[i];
+    else if(r<ss || se<l) return 0;
+    int m=(ss+se)/2;
+    return (rsq(a,seg,l,r,ss,m,2*i+1)+rsq(a,seg,l,r,m+1,se,2*i+2));
+}
