@@ -1,0 +1,15 @@
+void updatemin(vector<int>&a ,vector<int>&seg,int id,int x)
+{
+    int n=(seg.size()+1)/2;
+    a[id]=x;
+    id+=n-1;
+    id=(id-1)/2;
+    while(id>=0)
+    {
+        if(a[seg[2*id+1]]<a[seg[2*id+2]]) seg[id]=seg[2*id+1];
+        else seg[id]=seg[2*id+2];
+        if(id>0)
+        {id=(id-1)/2;}
+        else {break;}
+    }
+}
