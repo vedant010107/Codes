@@ -1,10 +1,12 @@
 int rmq(vector <int>&a,vector<int>&seg,int l,int r,int ss,int se,int i)
 {
     if(l<=ss && se<=r) return seg[i];
-    else if(r<ss || se<l) return (seg.size()+1)/2;
+    else if(r<ss || se<l) return -1;
     int m=(ss+se)/2;
     int m1=rmq(a,seg,l,r,ss,m,2*i+1);
     int m2=rmq(a,seg,l,r,m+1,se,2*i+2);
-    if(a[m1]<a[m2]) return m1;
+    if(m1 ==-1) return m2;
+    if(m2==-1) return m1;
+    if(a[m1]<=a[m2]) return m1;
     else return m2;
 }
