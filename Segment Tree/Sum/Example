@@ -6,46 +6,46 @@
 #define nl cout << '\n'
 #define sortall(a) sort(a.begin(), a.end())
 using namespace std;
-int rsq(vector <int>&a,vector<int>&seg,int l,int r,int ss,int se,int i)
-{
-    if(l<=ss && se<=r) return seg[i];
-    else if(r<ss || se<l) return 0;
-    int m=(ss+se)/2;
-    return (rsq(a,seg,l,r,ss,m,2*i+1)+rsq(a,seg,l,r,m+1,se,2*i+2));
-}
-void updatesum(vector<int>&a ,vector<int>&seg,int id,int x)
-{
-    int n=(seg.size()+1)/2;
-    a[id]=x;
-    id+=n-1;
-    seg[id]=x;
-    id=(id-1)/2;
-    while(id>=0)
-    {
-        seg[id]=seg[2*id+1]+seg[2*id+2];
-        if(id>0)
-        {id=(id-1)/2;}
-        else {break;}
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> buildsum(vector<int>& a, int& leaves) {
+    int n = a.size();
+    double temp = log2(n);
+    if (temp == (int)temp) leaves = 1 << (int)temp;
+    else leaves = 1 << ((int)temp + 1);
+
+    vector<int> seg(2 * leaves - 1, 0);
+    for (int i = 0; i < n; i++) {
+        seg[i + leaves - 1] = a[i];
     }
-}
-vector<int> buildsum(vector <int>&a)
-{
-    int leaves;int n=a.size();
-    double temp = log2(a.size());
-    if(temp==(int)temp) leaves=1<<(int)temp;
-    else leaves=1<<(int)(temp+1);
-    vector<int> seg(2*leaves-1,0);
-    for(int i=0;i<a.size();i++)
-    {
-        seg[i+leaves-1]=a[i];
-    }
-    for(int i=leaves-2;i>=0;i--)
-    {
-        seg[i]=seg[2*i+1]+seg[2*i+2];
-        
+    for (int i = leaves - 2; i >= 0; i--) {
+        seg[i] = seg[2 * i + 1] + seg[2 * i + 2];
     }
     return seg;
 }
+
+int rsq(vector<int>& seg, int l, int r, int ss, int se, int i) {
+    if (l <= ss && se <= r) return seg[i];
+    if (r < ss || se < l) return 0;
+    int m = (ss + se) / 2;
+    return rsq(seg, l, r, ss, m, 2 * i + 1) +
+           rsq(seg, l, r, m + 1, se, 2 * i + 2);
+}
+
+void updatesum(vector<int>& a, vector<int>& seg, int id, int x) {
+    int leaves=(seg.size()+1)/2;
+    a[id] = x;
+    int index = id + leaves - 1;
+    seg[index] = x;
+    index = (index - 1) / 2;
+    while (index >= 0) {
+        seg[index] = seg[2 * index + 1] + seg[2 * index + 2];
+        if (index == 0) break;
+        index = (index - 1) / 2;
+    }
+}
+
 
 int main()
 {
@@ -54,12 +54,13 @@ int main()
     int n;cin>>n;int ind;cin>>ind;
     vec a(n);
     loop(i,0,n) { cin>>a[i];}
-    vec seg=buildsum(a);
+    int leaves;
+    vec seg=buildsum(a,leaves);
     // loop(i,0,seg.size()){cout<<seg[i]<<" ";}
-    nl;
+    // nl;
     updatesum(a,seg,0,-6);
     // loop(i,0,a.size()){cout<<a[i]<<" ";};nl;
-    loop(i,0,seg.size()){cout<<seg[i]<<" ";}nl;
-    cout<<" "<<rsq(a,seg,1,3,0,n-1,0);nl;
+    // loop(i,0,seg.size()){cout<<seg[i]<<" ";}nl;
+    cout<<" "<<rsq(seg,0,3,0,leaves-1,0);nl;
     return 0;
 }
